@@ -67,20 +67,41 @@ namespace ClassicUO.Game.GameObjects
                 if (World.Player == null)
                     return ushort.MaxValue;
 
+                if (this == World.Player)
+                    return 0;
+
                 int x = X, y = Y;
 
-                if (this is Mobile mobile)
+                if (this is Mobile ent && ent.Steps.Count != 0)
                 {
-                    if (mobile == World.Player)
-                        return 0;
+                    ref var step = ref ent.Steps.Back();
+                    x = step.X;
+                    y = step.Y;
 
-                    if (mobile.Steps.Count != 0)
+                    if (x != LastX || y != LastY)
                     {
-                        ref var step = ref mobile.Steps.Back();
-                        x = step.X;
-                        y = step.Y;
+
                     }
                 }
+                else if (LastX != 0xFFFF && LastY != 0xFFFF)
+                {
+                    x = LastX;
+                    y = LastY;
+                }
+
+                //if (this is Entity entity)
+                //{
+
+
+                //    //if (mobile.Steps.Count != 0)
+
+                //    if (entity.LastX != 0xFFFF && entity.LastY != 0xFFFF)
+                //    {
+                //        //ref var step = ref mobile.Steps.Back();
+                //        x = entity.LastX;
+                //        y = entity.LastY;
+                //    }
+                //}
 
                 int fx = World.RangeSize.X;
                 int fy = World.RangeSize.Y;
@@ -131,6 +152,15 @@ namespace ClassicUO.Game.GameObjects
         public virtual void UpdateGraphicBySeason()
         {
 
+        }
+
+
+        public ushort LastX = 0xFFFF, LastY = 0xFFFF;
+
+        public void ResetLastXY()
+        {
+            LastX = 0xFFFF;
+            LastY = 0xFFFF;
         }
 
         [MethodImpl(256)]
@@ -298,6 +328,7 @@ namespace ClassicUO.Game.GameObjects
             if (IsDestroyed)
                 return;
 
+            ResetLastXY();
             Next = null;
             Previous = null;
 

@@ -46,7 +46,7 @@ namespace ClassicUO.Game.GameObjects
         public uint LastStepTime;
 
         protected long LastAnimationChangeTime;
-
+        
 
         public bool HasEquipment => _equipment != null;
 
@@ -277,6 +277,7 @@ namespace ClassicUO.Game.GameObjects
 
         public override void Destroy()
         {
+            ResetLastXY();
             _equipment = null;
             base.Destroy();
         }

@@ -26,7 +26,7 @@ namespace ClassicUO.Game.Managers
         struct ItemInside
         {
             public uint Serial;
-            public int X, Y, Z;
+            public int OffX, OffY, OffZ;
         }
 
 
@@ -76,7 +76,7 @@ namespace ClassicUO.Game.Managers
                 _steps[serial] = deque;
             }
 
-            while (deque.Count >= 2)
+            while (deque.Count > Constants.MAX_STEP_COUNT)
             {
                 deque.RemoveFromFront();
             }
@@ -107,32 +107,34 @@ namespace ClassicUO.Game.Managers
             step.Time = _timePacket == 0 || deque.Count == 0 ? (uint) GetVelocity(speed) : Time.Ticks - _timePacket;
             step.Speed = speed;
 
-            if (moveDir != Direction.NONE)
-            {
-                if (moveDir != endDir)
-                {
-                    step.X = currX;
-                    step.Y = currY;
-                    step.Z = currZ;
-                    step.MovingDir = moveDir;
-                    deque.AddToBack(step);
-                }
+            //if (moveDir != Direction.NONE)
+            //{
+            //    if (moveDir != endDir)
+            //    {
+            //        step.X = currX;
+            //        step.Y = currY;
+            //        step.Z = currZ;
+            //        step.MovingDir = moveDir;
+            //        deque.AddToBack(step);
+            //    }
 
-                step.X = x;
-                step.Y = y;
-                step.Z = z;
-                step.MovingDir = moveDir;
-                deque.AddToBack(step);
-            }
+            //    step.X = x;
+            //    step.Y = y;
+            //    step.Z = z;
+            //    step.MovingDir = moveDir;
+            //    deque.AddToBack(step);
+            //}
 
-            if (moveDir != movingDir)
-            {
-                step.X = x;
-                step.Y = y;
-                step.Z = z;
-                step.MovingDir = movingDir;
-                deque.AddToBack(step);
-            }
+            //if (moveDir != movingDir)
+            //{
+                
+            //}
+
+            step.X = x;
+            step.Y = y;
+            step.Z = z;
+            step.MovingDir = movingDir;
+            deque.AddToBack(step);
 
             ClearEntities(serial);
             _timePacket = Time.Ticks;
@@ -198,14 +200,11 @@ namespace ClassicUO.Game.Managers
             {
                 ref var item = ref list[i];
 
-                if(!SerialHelper.IsValid(item.Serial))
-                    break;
-
                 if (item.Serial == objSerial)
                 {
-                    item.X = x;
-                    item.Y = y;
-                    item.Z = z;
+                    item.OffX = x;
+                    item.OffY = y;
+                    item.OffZ = z;
                     return;
                 }
             }
@@ -213,9 +212,9 @@ namespace ClassicUO.Game.Managers
             list.Add(new ItemInside()
             {
                 Serial = objSerial,
-                X = x,
-                Y = y,
-                Z = z
+                OffX = x,
+                OffY = y,
+                OffZ = z
             });
         }
 
@@ -244,7 +243,7 @@ namespace ClassicUO.Game.Managers
 
 
                     if (/*step.FacingDir == step.MovingDir &&*/
-                        (item.X != step.X || item.Y != step.Y))
+                       (item.X != step.X || item.Y != step.Y))
                     {
                         if (maxDelay != 0)
                         {
@@ -353,11 +352,20 @@ namespace ClassicUO.Game.Managers
                     }
 
                     if (removeStep)
-                    {                    
-                        entity.X = (ushort) (x - it.X);
-                        entity.Y = (ushort) (y - it.Y);
-                        entity.Z = (sbyte) (z - it.Z);                       
+                    {
+                        //var clx = entity.LastX;
+                        //var cly = entity.LastY;
+
+                        entity.X = (ushort) (x - it.OffX);
+                        entity.Y = (ushort) (y - it.OffY);
+                        entity.Z = (sbyte) (z - it.OffZ);                       
                         entity.UpdateScreenPosition();
+
+                        //if (clx != entity.LastX || cly != entity.LastY)
+                        //{
+                        //entity.LastX = clx;
+                        //entity.LastY = cly;
+                        //}
 
                         entity.Offset.X = 0;
                         entity.Offset.Y = 0;

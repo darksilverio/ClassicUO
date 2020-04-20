@@ -4284,6 +4284,10 @@ namespace ClassicUO.Network
                 return;
 
             uint serial = p.ReadUInt();
+            Item item = World.Items.Get(serial);
+            if (item == null)
+                return;
+
             byte boatSpeed = p.ReadByte();
             Direction movingDirection = (Direction) p.ReadByte() & Direction.Mask;
             Direction facingDirection = (Direction) p.ReadByte() & Direction.Mask;
@@ -4296,7 +4300,7 @@ namespace ClassicUO.Network
                                       movingDirection, 
                                       facingDirection, 
                                       x, y, (sbyte) z);
-
+            
             int count = p.ReadUShort();
 
             for (int i = 0; i < count; i++)
@@ -4312,13 +4316,21 @@ namespace ClassicUO.Network
                     World.RangeSize.Y = cy;
                 }
 
-                if (World.Contains(cSerial))
+                Entity ent = World.Get(cSerial);
+
+                if (ent != null)
+                {
+                    ent.LastX = cx;
+                    ent.LastY = cy;
+
                     BoatMovingManager.PushItemToList(
-                    serial,
-                    cSerial, 
-                    x - cx, 
-                    y - cy,
-                    (sbyte) (z - cz));
+                                                     serial,
+                                                     cSerial,
+                                                     x - cx,
+                                                     y - cy,
+                                                     (sbyte) (z - cz));
+                }
+
             }
         }
 

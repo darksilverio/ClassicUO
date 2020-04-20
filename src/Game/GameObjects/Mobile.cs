@@ -132,7 +132,7 @@ namespace ClassicUO.Game.GameObjects
         }
 
 
-        public Deque<Step> Steps { get; } = new Deque<Step>(Constants.MAX_STEP_COUNT);
+        public readonly Deque<Step> Steps = new Deque<Step>();
 
         public CharacterSpeedType SpeedMode = CharacterSpeedType.Normal;
 
@@ -333,6 +333,9 @@ namespace ClassicUO.Game.GameObjects
                 step.Run = run;
                 Steps.AddToBack(step);
             }
+
+            LastX = (ushort) x;
+            LastY = (ushort) y;
 
             return true;
         }
@@ -720,6 +723,7 @@ namespace ClassicUO.Game.GameObjects
             if (Steps.Count != 0 && !IsDestroyed)
             {
                 ref Step step = ref Steps.Front();
+  
                 dir = step.Direction;
 
                 if (step.Run)
@@ -1094,8 +1098,8 @@ namespace ClassicUO.Game.GameObjects
         {
             public int X, Y;
             public sbyte Z;
-            public byte Direction;
             public bool Run;
+            public byte Direction;
         }
     }
 }

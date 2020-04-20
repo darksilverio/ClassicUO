@@ -19,6 +19,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #endregion
 
+using System;
 using System.Collections.Generic;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
@@ -194,7 +195,9 @@ namespace ClassicUO.Game
                     mob.Update(totalMS, frameMS);
 
                     if (mob.Distance > ClientViewRange)
+                    {
                         RemoveMobile(mob);
+                    }
 
                     if (mob.IsDestroyed)
                         _toRemove.Add(mob);
